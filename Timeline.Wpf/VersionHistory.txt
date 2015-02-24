@@ -1,0 +1,13 @@
+﻿
+2010-01-08 1.0.0.0 
+	Initial release to CodePlex
+
+2010-01-XX 1.0.0.1
+	* Add support for add and remove items and connections
+	* Fix TreeView layout glitch
+	* Fix TimelineRulerControl to remove blocks if min and max are not set
+	* Fix TimelineControl to zero MaximumTickTimeSpan if no min nor max are set and recalculate it when they are changed
+
+2011-10-01 1.1.0.0
+	Add MinimumTickTimeSpan and MaximumTickTimeSpan to allow zoom slider boundaries.
+	Add DisplayTickTimeSpan which translate the amount of actual time display in the timeline to TimeSpan value.

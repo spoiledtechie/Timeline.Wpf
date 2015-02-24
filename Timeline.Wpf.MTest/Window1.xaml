@@ -1,0 +1,425 @@
+﻿<Window x:Class="Timeline.Wpf.MTest.Window1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:gc="clr-namespace:Timeline.Wpf.MTest"
+    xmlns:uifx="http://schemas.dynamicnetworkadapter.com/dna/aurora/2009"
+    xmlns:cm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+    WindowState="Maximized"
+    Title="TimelineControl Test Application" Height="600" Width="800">
+
+    <Window.Resources>
+
+        <VisualBrush 
+              x:Key="HatchBrush" 
+              TileMode="Tile" Viewport="0,0,10,10" 
+              ViewportUnits="Absolute" Viewbox="0,0,10,10"    
+              ViewboxUnits="Absolute">
+            <VisualBrush.Visual>
+                <Canvas>
+                    <Rectangle Fill="Azure" Width="10" Height="10" />
+                    <Path Stroke="LightSalmon" Data="M 0 0 l 10 10" />
+                    <Path Stroke="LightSalmon" Data="M 0 10 l 10 -10" />
+                </Canvas>
+            </VisualBrush.Visual>
+        </VisualBrush>
+
+        <gc:DoubleToTimeSpanFromMinutesConverter x:Key="DoubleToTimeSpanFromMinutes" />
+
+        <!-- 
+        This style is the base style for all timeline items.
+        In this application is means Task and SuperTask.
+        
+        It bind the AttachedDependencyProperties StartDate, EndDate and RowIndex
+        of the data entities to the visual elements presented in the TimelineControl.
+        
+        IsCollapsed property control wether the item is show or hidden in the TimelineControl.
+        In this application data model when a SuperTask IsChildrenVisible is false then all of it's
+        child Task entities return True from thier IsCollapsed property and vise-versa.
+        -->
+        <Style x:Key="BaseTimelineItemStyle" TargetType="{x:Type uifx:TimelineItem}">
+            <Setter Property="uifx:TimelinePanel.StartDate" Value="{Binding Path=Start}"/>
+            <Setter Property="uifx:TimelinePanel.EndDate" Value="{Binding Path=End}"/>
+            <Setter Property="uifx:TimelinePanel.RowIndex" Value="{Binding Path=DisplayOrder}" />
+            <Setter Property="IsCollapsed" Value="{Binding IsCollapsed}" />
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!--
+        The tooltip of Task visual item.
+        -->
+        <StackPanel x:Key="TaskTooltip" >
+            <TextBlock Text="Task" />
+            <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Start:" Margin="0,0,5,0" />
+                <TextBlock Text="{Binding Start}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="End:" Margin="0,0,5,0" />
+                <TextBlock Text="{Binding End}" />
+            </StackPanel>
+            
+            <TextBlock TextWrapping="Wrap">
+                <LineBreak/>
+                <Run Text="This item is visual representation of Task entity."/><LineBreak/>
+                <Run Text="The length of the rectangle present the start time and duration of the Task" />
+            </TextBlock>
+        </StackPanel>
+
+        <!--
+        The tooltip for Task visual item when its IsDisplayAsZero property is true.
+        -->
+        <StackPanel x:Key="TaskDisplayAsZeroTooltip" >
+            <TextBlock Text="Task" />
+            <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Start:" Margin="0,0,5,0" />
+                <TextBlock Text="{Binding Start}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="End:" Margin="0,0,5,0" />
+                <TextBlock Text="{Binding End}" />
+            </StackPanel>
+            
+            <TextBlock TextWrapping="Wrap">
+                <LineBreak/>
+                <Run Text="This item is visual representation of Task entity." /><LineBreak />
+                <Run Text="Because the length of this Task in the current zoom factor is so small," /><LineBreak/>
+                <Run Text="it has been changed to reflect only the location on the timeline without the duration." />
+            </TextBlock>
+        </StackPanel>
+
+        <!--
+        This DataTemplate is the visual presentation of Task.
+        You can use Binding to bound data entity properties and also trigger
+        to change the visual aspect when data entity properties change.
+        
+        We relay on WPF ability to find DataTemplate according to the DataType property.
+        You can also set the template explicitly in the Style of Task.
+        -->
+        <DataTemplate DataType="{x:Type gc:Task}">
+            <Border BorderBrush="Green" BorderThickness="1" 
+                    SnapsToDevicePixels="True">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0.2,0" EndPoint="1,1">
+                        <GradientStop Color="Honeydew" />
+                        <GradientStop Offset="0.8" Color="LightGreen" />
+                    </LinearGradientBrush>
+                </Border.Background>
+                <TextBlock Text="{Binding Path=Name}" 
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis"/>
+            </Border>
+        </DataTemplate>
+
+        <!--
+        This DataTemplate is the visual presentation of Task when it is display as zero length.
+        TimelineItem is display as zero length (indicating by IsDisplayAsZero boolean property)
+        when the length is falling bellow threshold that is not sutable for display any more.
+        When item is display as zero the user can see where is is on the timeline but not
+        the length of it.
+        -->
+        <DataTemplate x:Key="TaskZeroTemplate">
+            <Border Background="Blue"
+                       BorderBrush="Azure" BorderThickness="1">
+                <TextBlock Text="{Binding Name}" Foreground="White" HorizontalAlignment="Center" />
+            </Border>
+        </DataTemplate>
+
+        <!--
+        This style control the style of Task data entity presented visually in the TimelineControl
+        as TimelineItem.
+        
+        You can change any aspect of the TimelineItem and also use Triggers to react to TimelineItem
+        propertis as well as data entity properties.
+        
+        We relay on WPF ability to find the style by setting the Key property of this style
+        to the style gc:Task.
+        -->
+        <Style x:Key="{x:Type gc:Task}" TargetType="{x:Type uifx:TimelineItem}"
+               BasedOn="{StaticResource BaseTimelineItemStyle}">
+            <Setter Property="BorderBrush" Value="Red" />
+            <Setter Property="BorderThickness" Value="3" />
+
+            <Setter Property="ToolTip" Value="{StaticResource TaskTooltip}"/>
+
+            <Style.Triggers>
+                <Trigger Property="IsDisplayAsZero" Value="True">
+                    <Setter Property="ContentTemplate" Value="{StaticResource TaskZeroTemplate}" />
+                    <Setter Property="ToolTip" Value="{StaticResource TaskDisplayAsZeroTooltip}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!--
+        The tooltip for SuperTask data entity.
+        -->
+        <StackPanel x:Key="SuperTaskTooltip" >
+            <TextBlock Text="SuperTask" />
+            <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Start:" Margin="0,0,5,0" />
+                <TextBlock Text="{Binding Start}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="End:" Margin="0,0,5,0" />
+                <TextBlock Text="{Binding End}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Tasks Count:" Margin="0,0,5,0" />
+                <TextBlock Text="{Binding Tasks.Count}" />
+            </StackPanel>
+
+            <TextBlock TextWrapping="Wrap">
+                <LineBreak/>
+                <Run Text="This item is visual representation of SuperTask entity."/><LineBreak/>
+                <Run Text="The length of the rectangle present the start time and duration of the SuperTask" />
+            </TextBlock>
+        </StackPanel>
+
+        <!--
+        The tooltip for SuperTask data entity when it is display as zero length.
+        -->
+        <StackPanel x:Key="SuperTaskDisplayAsZeroTooltip" >
+            <TextBlock Text="SuperTask" />
+            <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Start:" Margin="0,0,5,0" />
+                <TextBlock Text="{Binding Start}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="End:" Margin="0,0,5,0" />
+                <TextBlock Text="{Binding End}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Tasks Count:" Margin="0,0,5,0" />
+                <TextBlock Text="{Binding Tasks.Count}" />
+            </StackPanel>
+            
+            <TextBlock TextWrapping="Wrap">
+                <LineBreak/>
+                <Run Text="This item is visual representation of SuperTask entity."/><LineBreak/>
+                <Run Text="Because the length of this SuperTask in the current zoom factor is so small,"/><LineBreak/>
+                <Run Text="it has been changed to reflect only the location on the timeline without the duration." />
+            </TextBlock>
+        </StackPanel>
+
+        <!--
+        This DataTemplate is the visual presentation of Task.
+        You can use Binding to bound data entity properties and also trigger
+        to change the visual aspect when data entity properties change.
+        
+        We relay on WPF ability to find DataTemplate according to the DataType property.
+        You can also set the template explicitly in the Style of SuperTask.
+        -->
+        <DataTemplate DataType="{x:Type gc:SuperTask}">
+            <Border BorderBrush="Green" BorderThickness="1" 
+                    SnapsToDevicePixels="True"
+                    Background="{StaticResource HatchBrush}">
+                <TextBlock Text="{Binding Path=Name}" 
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis"/>
+            </Border>
+        </DataTemplate>
+
+        <!--
+        This DataTemplate is the visual presentation of SuperTask when it is display as zero length.
+        TimelineItem is display as zero length (indicating by IsDisplayAsZero boolean property)
+        when the length is falling bellow threshold that is not sutable for display any more.
+        When item is display as zero the user can see where is is on the timeline but not
+        the length of it.
+        -->
+        <DataTemplate x:Key="SuperTaskZeroTemplate">
+            <Rectangle Width="10" Fill="Red"
+                       Stroke="Orange" StrokeThickness="1"
+                       RenderTransformOrigin="0.5,0.5">
+                <Rectangle.RenderTransform>
+                    <RotateTransform Angle="45" />
+                </Rectangle.RenderTransform>
+            </Rectangle>
+        </DataTemplate>
+
+        <!--
+        This style control the style of SuperTask data entity presented visually in the TimelineControl
+        as TimelineItem.
+        
+        You can change any aspect of the TimelineItem and also use Triggers to react to TimelineItem
+        propertis as well as data entity properties.
+        
+        We relay on WPF ability to find the style by setting the Key property of this style
+        to the style gc:SuperTask.
+        -->
+        <Style x:Key="{x:Type gc:SuperTask}" TargetType="{x:Type uifx:TimelineItem}"
+               BasedOn="{StaticResource BaseTimelineItemStyle}">
+            <Setter Property="BorderBrush" Value="Orange" />
+            <Setter Property="BorderThickness" Value="3" />
+
+            <Setter Property="ToolTip" Value="{StaticResource SuperTaskTooltip}" />
+
+            <Style.Triggers>
+                <Trigger Property="IsDisplayAsZero" Value="True">
+                    <Setter Property="ContentTemplate" Value="{StaticResource SuperTaskZeroTemplate}" />
+                    <Setter Property="ToolTip" Value="{StaticResource SuperTaskDisplayAsZeroTooltip}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!--
+        This style is the base style for all timeline connection items.
+        In this application is means TaskDependency.
+        
+        Connection are represented as lines connecting two TimelineItem.
+        Since you cannot change the visual template (DataTemplate) of the connection
+        you can only change it through the use of Style to change the visual properties
+        of the line.
+        -->
+        <Style x:Key="TimelineBaseConnectionStyle" TargetType="{x:Type uifx:Connection}">
+            <Setter Property="Cursor" Value="Cross" />
+            <Setter Property="ToolTip" Value="{Binding Text}" />
+        </Style>
+
+        <!--
+        This style bind the properties of TaskDependnency data entity to the visual
+        properties of Connection.
+        
+        The AttachedDependnencyProperties FromItem and ToItem need to return the
+        data entities the connection needs to connect.
+        -->
+        <Style x:Key="{x:Type gc:TaskDependency}"
+               TargetType="{x:Type uifx:Connection}"
+               BasedOn="{StaticResource TimelineBaseConnectionStyle}">
+
+            <Setter Property="LineStroke" Value="DarkGray" />
+            <Setter Property="LineStrokeThickness" Value="2" />
+            <Setter Property="uifx:ConnectionsPresenter.FromItem" Value="{Binding Prior}" />
+            <Setter Property="uifx:ConnectionsPresenter.ToItem" Value="{Binding Depend}" />
+            <!--<Setter Property="ContextMenu" Value="{StaticResource ConnectionContextMenu}" />-->
+
+        </Style>
+
+        <!--
+        This is not a TimelineControl style.
+        This style is used in the TreeListView to bind the IsExpanded property of the tree
+        to the IsChildrenVisible of SuperTask data entity.
+        When IsChildrenVisible is change the child Task's IsCollapsed change accordingly.
+        -->
+        <Style TargetType="{x:Type uifx:TreeListViewItem}"
+               BasedOn="{StaticResource {x:Type uifx:TreeListViewItem}}">
+            <Setter Property="IsExpanded" Value="{Binding IsChildrenVisible, Mode=TwoWay}" />
+        </Style>
+
+    </Window.Resources>
+
+    <Border Width="Auto" Margin="5,5,5,5" Padding="5,5,5,5"
+        BorderBrush="#FF002BA1" BorderThickness="2,2,2,2" >
+        <Grid>
+            <Grid.Resources>
+                <StackPanel x:Key="ZoomTooltip">
+                    <TextBlock Text="The zoom change the TickTimeSpan which indicate what TimeSpan each Tick (single DIP) represent." />
+                    <TextBlock Text="Think that the TimelineControl is devided to Ticks, each tick is a single vertical line" />
+                    <TextBlock Text="The TickTimeSpan together with MinimumDate and MaximumDate allow the TimelineControl to calculate how much space it needs" />
+                </StackPanel>
+            </Grid.Resources>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20" />
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="0" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+
+            <StackPanel Orientation="Horizontal" Grid.ColumnSpan="3">
+                <TextBlock Text="Zoom:" FontWeight="Bold" Margin="0,0,5,0" />
+                <TextBlock Text="{Binding ElementName=Slid, Path=Value}" Width="30" ToolTip="{StaticResource ZoomTooltip}"/>
+                <Slider x:Name="Slid" Width="100" 
+                        Minimum="{Binding ElementName=TheGantt, Path=MinimumTickTimeSpan.TotalSeconds}" 
+                        Maximum="{Binding ElementName=TheGantt, Path=MaximumTickTimeSpan.TotalSeconds}" 
+                        ToolTip="{StaticResource ZoomTooltip}" />
+                <TextBlock Text="Display TimeSpan:" Margin="20,0,4,0" />
+                <TextBlock Text="{Binding ElementName=TheGantt, Path=DisplayTimeSpan}" 
+                           ToolTip="This TimeSpan represent the amount of real-world-time display inside the TimelineControl. You can change the zoom factor to change it."/>
+            </StackPanel>
+
+            <!--
+            We use TreeListView to show the same data entities bound to the TimelineControl.
+            That is Task and SuperTask.
+            -->
+            <uifx:TreeListView
+                Grid.Column="0" Grid.Row="1"
+                x:Name="ContentTree"
+                BorderThickness="0"
+                ScrollViewer.VerticalScrollBarVisibility="Hidden"
+            >
+                <uifx:TreeListView.SortDescriptions>
+                    <cm:SortDescriptionCollection>
+                        <cm:SortDescription PropertyName="DisplayOrder" />
+                    </cm:SortDescriptionCollection>
+                </uifx:TreeListView.SortDescriptions>
+                <uifx:TreeListView.Resources>
+                    <DataTemplate x:Key="ItemCellTemplate">
+                        <ContentPresenter Content="{Binding}" Height="20" />
+                    </DataTemplate>
+
+                    <HierarchicalDataTemplate DataType="{x:Type gc:SuperTask}"
+                                              ItemsSource="{Binding Tasks}">
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Height="10" Width="10" Fill="Brown" />
+                            <TextBlock Text="{Binding Name}" />
+                            <TextBlock Text="-" Margin="5,0,5,0" />
+                            <TextBlock Text="{Binding Tasks.Count}" /> 
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+
+                    <DataTemplate DataType="{x:Type gc:Task}">
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Height="10" Width="10" Fill="Indigo" />
+                            <TextBlock Text="{Binding Name}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </uifx:TreeListView.Resources>
+
+
+                <uifx:TreeListView.Columns>
+                    <GridViewColumn Header="Project/Task" CellTemplate="{StaticResource ItemCellTemplate}" Width="100" />
+                    <GridViewColumn Header="Start" DisplayMemberBinding="{Binding Start}" Width="100" />
+                    <GridViewColumn Header="Finish" DisplayMemberBinding="{Binding End}" Width="100" />
+                </uifx:TreeListView.Columns>
+
+            </uifx:TreeListView>
+
+            <GridSplitter Grid.Column="1" VerticalAlignment="Stretch" />
+
+            <!--
+            The one and only (copyright MFC) TimelineControl.
+            
+            In this test application we bind the control to data via code.
+            We bind the TickTimeSpan (zoom) to the slider using converter to convert
+            the value of the slider to minutes TimeSpan.
+            -->
+            <uifx:TimelineControl 
+                x:Name="TheGantt" Grid.Row="1" Grid.Column="2"
+                TickTimeSpan="{Binding ElementName=Slid, Path=Value, Converter={StaticResource DoubleToTimeSpanFromMinutes}}">
+                <uifx:TimelineControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <uifx:TimelineGanttPanel RowHeight="18" RowVerticalMargin="2" />
+                    </ItemsPanelTemplate>
+                </uifx:TimelineControl.ItemsPanel>
+            </uifx:TimelineControl>
+
+
+        </Grid>
+    </Border>
+
+</Window>
