@@ -1,11 +1,9 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Timeline.Wpf", "Timeline.Wpf\Timeline.Wpf.csproj", "{BC93CAC1-1491-4877-BC59-9A20A3FD8C8D}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Org.Dna.Aurora.UIFramework.Wpf.Timeline", "Org.Dna.Aurora.UIFramework.Wpf.Timeline\Org.Dna.Aurora.UIFramework.Wpf.Timeline.csproj", "{BC93CAC1-1491-4877-BC59-9A20A3FD8C8D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Timeline.Wpf.MTest", "Timeline.Wpf.MTest\Timeline.Wpf.MTest.csproj", "{1AD91C31-A629-4BA8-A292-478D4DCBA967}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Org.Dna.Aurora.UIFramework.Wpf.Timeline.MTest", "Org.Dna.Aurora.UIFramework.Wpf.Timeline.MTest\Org.Dna.Aurora.UIFramework.Wpf.Timeline.MTest.csproj", "{1AD91C31-A629-4BA8-A292-478D4DCBA967}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

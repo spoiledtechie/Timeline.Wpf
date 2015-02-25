@@ -1,0 +1,62 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:Org.Dna.Aurora.UIFramework.Wpf.Timeline">
+
+    <!-- Connector Style -->
+    <Style TargetType="{x:Type local:Connector}">
+        <Setter Property="Width" Value="8"/>
+        <Setter Property="Height" Value="8"/>
+        <Setter Property="SnapsToDevicePixels" Value="true"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:Connector}">
+                    <Grid>
+                        <!-- transparent extra space makes connector easier to hit -->
+                        <!--<Rectangle Fill="Transparent" Margin="-2"/>-->
+                        <!--<Rectangle Fill="Lavender"  StrokeThickness="1" Stroke="#AA000080"/>-->
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:TimelineItem}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:TimelineItem}">
+                    <Grid x:Name="OuterGrid">
+                        <ContentPresenter />
+
+                        <!-- PART_ConnectorDecorator -->
+                        <Grid Margin="-5">
+                            <local:Connector x:Name="PART_Left" Orientation="Left" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                            <!--<local:Connector Orientation="Top" VerticalAlignment="Top" HorizontalAlignment="Center"/>-->
+                            <local:Connector x:Name="PART_Right" Margin="5" Orientation="Right" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                            <!--<local:Connector Orientation="Bottom" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>-->
+                        </Grid>
+
+                    </Grid>
+                    
+                    <ControlTemplate.Triggers>
+                        <!--<Trigger Property="IsDisplayAsZero" Value="True">
+                            <Setter TargetName="OuterGrid" Property="Visibility"
+                                    Value="Collapsed" />
+                        </Trigger>-->
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:TimelineItemsPresenter}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:TimelineItemsPresenter}">
+                    <Border Background="{TemplateBinding Background}">
+                        <ItemsPresenter />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>
