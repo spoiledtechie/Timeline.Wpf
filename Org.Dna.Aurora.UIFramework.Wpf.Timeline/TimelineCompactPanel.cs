@@ -24,16 +24,16 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline {
 			int childRow = -1;
 
 			bool[] overlapRows = new bool[RowsCount + 1];
-			Nullable<DateTime> currStart = GetStartDate(child);
-			Nullable<DateTime> currEnd = GetEndDate(child);
+            Nullable<long> currStart = GetStartMilliseconds(child);
+			Nullable<long> currEnd = GetEndMilliseconds(child);
 
 			if (!(currStart == null || currEnd == null)) {
 				foreach (UIElement previousChild in measuredChildren) {
-					Nullable<DateTime> prevStart = GetStartDate(previousChild);
-					Nullable<DateTime> prevEnd = GetEndDate(previousChild);
+                    Nullable<long> prevStart = GetStartMilliseconds(previousChild);
+					Nullable<long> prevEnd = GetEndMilliseconds(previousChild);
 
 					if (prevStart.HasValue && prevEnd.HasValue) {
-						DateTime smallStart, smallEnd, largeStart, largeEnd;
+						long smallStart, smallEnd, largeStart, largeEnd;
 						if (currStart <= prevStart) {
 							smallStart = currStart.Value;
 							smallEnd = currEnd.Value;
