@@ -16,9 +16,9 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
 
         static TimelinePanel()
         {
-            MinimumMillisecondsProperty = Timeline.MinimumMillisecondsProperty.AddOwner(typeof(TimelinePanel), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange));
-            MaximumMillisecondsProperty = Timeline.MaximumMillisecondsProperty.AddOwner(typeof(TimelinePanel), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange));
-            TickMillisecondsProperty = Timeline.TickMillisecondsProperty.AddOwner(typeof(TimelinePanel), new FrameworkPropertyMetadata(Timeline.TickMillisecondsDefaultValue, FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender));
+            MinimumTickProperty = Timeline.MinimumTickProperty.AddOwner(typeof(TimelinePanel), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange));
+            MaximumTickProperty = Timeline.MaximumTickProperty.AddOwner(typeof(TimelinePanel), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange));
+            TickTimeSpanProperty = Timeline.TickTimeSpanProperty.AddOwner(typeof(TimelinePanel), new FrameworkPropertyMetadata(Timeline.TickTimeSpanDefaultValue, FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender));
         }
 
         public TimelinePanel()
@@ -28,24 +28,16 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
 
         #region DP
 
-        public static readonly DependencyProperty MaximumMillisecondsProperty;
-        public static readonly DependencyProperty MinimumMillisecondsProperty;
-        public static readonly DependencyProperty TickMillisecondsProperty;
+        public static readonly DependencyProperty MaximumTickProperty;
+        public static readonly DependencyProperty MinimumTickProperty;
+        public static readonly DependencyProperty TickTimeSpanProperty;
 
 
-        public static readonly DependencyProperty StartMillisecondsProperty =
-                DependencyProperty.RegisterAttached("StartMilliseconds", typeof(long?), typeof(TimelinePanel),
-        new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsParentMeasure));
-        public static readonly DependencyProperty EndMillisecondsProperty =
-                DependencyProperty.RegisterAttached("EndMilliseconds", typeof(long?), typeof(TimelinePanel),
-        new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsParentMeasure));
-        public static readonly DependencyProperty RowIndexProperty =
-        DependencyProperty.RegisterAttached("RowIndex", typeof(int), typeof(TimelinePanel),
-        new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.AffectsParentMeasure));
+        public static readonly DependencyProperty StartTickProperty = DependencyProperty.RegisterAttached("StartTick", typeof(long?), typeof(TimelinePanel), new FrameworkPropertyMetadata(default(long), FrameworkPropertyMetadataOptions.AffectsParentMeasure));
+        public static readonly DependencyProperty EndTickProperty = DependencyProperty.RegisterAttached("EndTick", typeof(long?), typeof(TimelinePanel), new FrameworkPropertyMetadata(default(long), FrameworkPropertyMetadataOptions.AffectsParentMeasure));
+        public static readonly DependencyProperty RowIndexProperty = DependencyProperty.RegisterAttached("RowIndex", typeof(int), typeof(TimelinePanel), new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.AffectsParentMeasure));
 
-        private static readonly DependencyPropertyKey ActualRowIndexPropertyKey =
-              DependencyProperty.RegisterAttachedReadOnly("ActualRowIndex", typeof(int), typeof(TimelinePanel),
-        new FrameworkPropertyMetadata(0));
+        private static readonly DependencyPropertyKey ActualRowIndexPropertyKey = DependencyProperty.RegisterAttachedReadOnly("ActualRowIndex", typeof(int), typeof(TimelinePanel), new FrameworkPropertyMetadata(0));
 
         public static readonly DependencyProperty ActualRowIndexProperty =
             ActualRowIndexPropertyKey.DependencyProperty;
@@ -65,28 +57,27 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
             obj.ClearValue(ActualRowIndexPropertyKey);
         }
 
-        public static long? GetStartMilliseconds(DependencyObject obj)
+        public static long? GetStartTick(DependencyObject obj)
         {
             // Return start time and if null end time.
-            return (long?)obj.GetValue(StartMillisecondsProperty) ??
-                            (long?)obj.GetValue(EndMillisecondsProperty);
+            return (long?)obj.GetValue(StartTickProperty) ??
+                            (long?)obj.GetValue(EndTickProperty);
         }
 
         public static void SetStartDate(DependencyObject obj, DateTime? value)
         {
-            obj.SetValue(StartMillisecondsProperty, value);
+            obj.SetValue(StartTickProperty, value);
         }
 
-        public static long? GetEndMilliseconds(DependencyObject obj)
+        public static long? GetEndTick(DependencyObject obj)
         {
             // Return end time, and if null start time.
-            return (long?)obj.GetValue(EndMillisecondsProperty) ??
-                            (long?)obj.GetValue(StartMillisecondsProperty);
+            return (long?)obj.GetValue(EndTickProperty) ?? (long?)obj.GetValue(StartTickProperty);
         }
 
         public static void SetEndDate(DependencyObject obj, DateTime? value)
         {
-            obj.SetValue(EndMillisecondsProperty, value);
+            obj.SetValue(EndTickProperty, value);
         }
 
         public static int GetRowIndex(DependencyObject obj)
@@ -99,16 +90,16 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
             obj.SetValue(RowIndexProperty, value);
         }
 
-        public Nullable<long> MaximumMilliseconds
+        public Nullable<long> MaximumTick
         {
-            get { return (Nullable<long>)GetValue(MaximumMillisecondsProperty); }
-            set { SetValue(MaximumMillisecondsProperty, value); }
+            get { return (Nullable<long>)GetValue(MaximumTickProperty); }
+            set { SetValue(MaximumTickProperty, value); }
         }
 
-        public Nullable<long> MinimumMilliseconds
+        public Nullable<long> MinimumTick
         {
-            get { return (Nullable<long>)GetValue(MinimumMillisecondsProperty); }
-            set { SetValue(MinimumMillisecondsProperty, value); }
+            get { return (Nullable<long>)GetValue(MinimumTickProperty); }
+            set { SetValue(MinimumTickProperty, value); }
         }
 
         public int RowIndex
@@ -117,10 +108,10 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
             set { SetValue(RowIndexProperty, value); }
         }
 
-        public long TickTimeSpan
+        public TimeSpan TickTimeSpan
         {
-            get { return (long)GetValue(TickMillisecondsProperty); }
-            set { SetValue(TickMillisecondsProperty, value); }
+            get { return (TimeSpan)GetValue(TickTimeSpanProperty); }
+            set { SetValue(TickTimeSpanProperty, value); }
         }
 
         protected TimelineItem FindChildByDaya(object dep)
@@ -239,19 +230,19 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
 
         protected bool ShouldDisplayAsZero(TimelineItem child)
         {
-            long? childStartDate = GetStartMilliseconds(child);
-            long? childEndDate = GetEndMilliseconds(child);
+            long? childStartTick = GetStartTick(child);
+            long? childEndTick = GetEndTick(child);
 
             bool displayAsZero;
-            if (!(childStartDate.HasValue && childEndDate.HasValue))
+            if (!(childStartTick.HasValue && childEndTick.HasValue))
             {
                 displayAsZero = false;
             }
-            else if (childStartDate.HasValue && childEndDate.HasValue)
+            else if (childStartTick.HasValue && childEndTick.HasValue)
             {
-                long duration = childEndDate.Value - childStartDate.Value;
+                long duration = childEndTick.Value - childStartTick.Value;
                 displayAsZero = (duration <
-                    TickTimeSpan * MinimumDisplayMultiplier);
+                    TickTimeSpan.Ticks * MinimumDisplayMultiplier);
             }
             else
             {
@@ -264,42 +255,41 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
 
         private Rect CalcChildRectForDisplayAsZero(TimelineItem child, int childRowIndex)
         {
-            long? childStartDate = GetStartMilliseconds(child);
-            long? childEndDate = GetEndMilliseconds(child);
-            long centerDate;
+            long? childStartTick = GetStartTick(child);
+            long? childEndTick = GetEndTick(child);
+            long centerTick;
 
-            if (MinimumMilliseconds == null || MaximumMilliseconds == null)
+            if (MinimumTick == null || MaximumTick == null)
             {
                 return Rect.Empty;
             }
 
-            if (!(childStartDate.HasValue && childEndDate.HasValue))
+            if (!(childStartTick.HasValue && childEndTick.HasValue))
             {
                 // Patch?
-                centerDate = MinimumMilliseconds.Value;
+                centerTick = MinimumTick.Value;
             }
-            else if (childStartDate.HasValue && childEndDate.HasValue)
+            else if (childStartTick.HasValue && childEndTick.HasValue)
             {
-                long duration = childEndDate.Value - childStartDate.Value;
-                centerDate = childStartDate.Value + (duration / 2);
+                long duration = childEndTick.Value - childStartTick.Value;
+                centerTick = childStartTick.Value + (duration / 2);
             }
-            else if (childStartDate.HasValue)
+            else if (childStartTick.HasValue)
             {
-                centerDate = childStartDate.Value;
+                centerTick = childStartTick.Value;
             }
-            else if (childEndDate.HasValue)
+            else if (childEndTick.HasValue)
             {
-                centerDate = childEndDate.Value;
+                centerTick = childEndTick.Value;
             }
             else
             {
                 throw new Exception("Invalid state of TimelineItem values");
             }
 
-            double offset = centerDate - MinimumMilliseconds.Value * PixelsPerTick;
+            double offset = (centerTick - MinimumTick.Value) * PixelsPerTick;
             double width = 20;
-            double childTopOffset = childRowIndex * RowHeight +
-                childRowIndex * RowVerticalMargin;
+            double childTopOffset = childRowIndex * RowHeight + childRowIndex * RowVerticalMargin;
 
             return new Rect(offset, childTopOffset, width, RowHeight);
 
@@ -307,24 +297,24 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
 
         private Rect CalcChildRectByDuration(TimelineItem child, int childRowIndex)
         {
-            if (GetStartMilliseconds(child) == null || GetEndMilliseconds(child) == null || MinimumMilliseconds == null)
+            if (GetStartTick(child) == null || GetEndTick(child) == null || MinimumTick == null)
             {
                 return Rect.Empty;
             }
 
-            long childStartDate = GetStartMilliseconds(child) ?? MinimumMilliseconds.Value;
-            long childEndDate = GetEndMilliseconds(child) ?? MinimumMilliseconds.Value;
+            long childStartTick = GetStartTick(child) ?? MinimumTick.Value;
+            long childEndTick = GetEndTick(child) ?? MinimumTick.Value;
 
-            if (childEndDate < childStartDate)
+            if (childEndTick < childStartTick)
             {
-                childEndDate = childStartDate;
+                childEndTick = childStartTick;
             }
-            long childDuration = childEndDate - childStartDate;
+            long childDuration = childEndTick - childStartTick;
 
-            double offset = childStartDate - MinimumMilliseconds.Value * PixelsPerTick;
+            double offset = (childStartTick - MinimumTick.Value) * PixelsPerTick;
             double width = childDuration * PixelsPerTick;
-            double childTopOffset = childRowIndex * RowHeight +
-                childRowIndex * RowVerticalMargin;
+            double childTopOffset = childRowIndex * RowHeight + childRowIndex * RowVerticalMargin;
+
             return new Rect(offset, childTopOffset, width, RowHeight);
         }
 

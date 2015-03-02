@@ -64,12 +64,12 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
                 }
             }
 
-            long totalMilliseconds = 0;
-            if (MaximumMilliseconds.HasValue && MinimumMilliseconds.HasValue)
+            long totalTimeSpan = 0;
+            if (MaximumTick.HasValue && MinimumTick.HasValue)
             {
-                totalMilliseconds = MaximumMilliseconds.Value - MinimumMilliseconds.Value;
+                totalTimeSpan = MaximumTick.Value - MinimumTick.Value;
             }
-            double totalWidth = Math.Max(0, totalMilliseconds* PixelsPerTick);
+            double totalWidth = Math.Max(0, totalTimeSpan * PixelsPerTick);
             double totalHeight = Math.Max(0,
               nextActualRowIndex * RowHeight + nextActualRowIndex * RowVerticalMargin);
             return totalWidth <= 0 || totalHeight <= 0 ? Size.Empty : new Size(totalWidth, totalHeight);
@@ -77,8 +77,8 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
 
         private bool IsChildHasNoStartAndEndTime(UIElement child)
         {
-            long? childStartDate = GetStartMilliseconds(child);
-            long? childEndDate = GetEndMilliseconds(child);
+            long? childStartDate = GetStartTick(child);
+            long? childEndDate = GetEndTick(child);
 
             bool noTimes = childStartDate == null && childEndDate == null;
             return noTimes;

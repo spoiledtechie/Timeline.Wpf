@@ -11,8 +11,6 @@ using System.Windows.Threading;
 
 namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
 {
-
-
     public class TimelineControl : Control
     {
 
@@ -22,21 +20,15 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
         private ConnectionsPresenter connectionsPresenter;
         private ScrollViewer scrollViewer;
 
-        public ScrollViewer ScrollViewer
-        {
-            get { return scrollViewer; }
-        }
+        public ScrollViewer ScrollViewer { get { return scrollViewer; } }
 
         private bool setCurrentTimePending = false;
 
         #region DP
 
-        private static readonly DependencyPropertyKey ItemsPropertyKey =
-          DependencyProperty.RegisterReadOnly("Items", typeof(IList<object>),
-            typeof(TimelineControl), new FrameworkPropertyMetadata(null));
+        private static readonly DependencyPropertyKey ItemsPropertyKey = DependencyProperty.RegisterReadOnly("Items", typeof(IList<object>), typeof(TimelineControl), new FrameworkPropertyMetadata(null));
 
-        public static readonly DependencyProperty ItemsProperty =
-          ItemsPropertyKey.DependencyProperty;
+        public static readonly DependencyProperty ItemsProperty = ItemsPropertyKey.DependencyProperty;
 
 
         public IList<object> Items
@@ -283,26 +275,26 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
 
 
 
-        public Nullable<long> MaximumMilliseconds
+        public Nullable<long> MaximumTicks
         {
-            get { return (Nullable<long>)GetValue(MaximumMillisecondsProperty); }
-            set { SetValue(MaximumMillisecondsProperty, value); }
+            get { return (Nullable<long>)GetValue(MaximumTicksProperty); }
+            set { SetValue(MaximumTicksProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for MaximumDate.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty MaximumMillisecondsProperty;
+        public static readonly DependencyProperty MaximumTicksProperty;
 
 
 
 
-        public Nullable<long> MinimumMilliseconds
+        public Nullable<long> MinimumTicks
         {
-            get { return (Nullable<long>)GetValue(MinimumMillisecondsProperty); }
-            set { SetValue(MinimumMillisecondsProperty, value); }
+            get { return (Nullable<long>)GetValue(MinimumTicksProperty); }
+            set { SetValue(MinimumTicksProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for MinimumDate.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty MinimumMillisecondsProperty;
+        public static readonly DependencyProperty MinimumTicksProperty;
 
 
 
@@ -343,15 +335,14 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
         }
 
 
-        public long CurrentMilliseconds
+        public long CurrentTick
         {
-            get { return (long)GetValue(CurrentMillisecondsProperty); }
-            set { SetValue(CurrentMillisecondsProperty, value); }
+            get { return (long)GetValue(CurrentTimeProperty); }
+            set { SetValue(CurrentTimeProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for CurrentTime.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty CurrentMillisecondsProperty =
-            DependencyProperty.Register("CurrentMilliseconds", typeof(long), typeof(TimelineControl), new FrameworkPropertyMetadata(0L, CurrentTimeChanged));
+        public static readonly DependencyProperty CurrentTimeProperty = DependencyProperty.Register("CurrentTick", typeof(long), typeof(TimelineControl), new FrameworkPropertyMetadata(default(long), CurrentTimeChanged));
 
         private static void CurrentTimeChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
@@ -365,7 +356,7 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
         {
             if (ignoreCurrentChanged) return;
 
-            GoToMilliseconds((long)e.NewValue);
+            GoToTick((long)e.NewValue);
         }
 
         private static readonly DependencyPropertyKey MaximumTickTimeSpanPropertyKey =
@@ -497,17 +488,17 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(TimelineControl), new FrameworkPropertyMetadata(typeof(TimelineControl)));
 
-            MinimumMillisecondsProperty = Timeline.MinimumMillisecondsProperty.AddOwner(typeof(TimelineControl), new FrameworkPropertyMetadata(null, MinimumMaximumMillisecondsChanged));
-            MaximumMillisecondsProperty = Timeline.MaximumMillisecondsProperty.AddOwner(typeof(TimelineControl), new FrameworkPropertyMetadata(null, MinimumMaximumMillisecondsChanged));
-            TickTimeSpanProperty = Timeline.TickMillisecondsProperty.AddOwner(typeof(TimelineControl), new FrameworkPropertyMetadata(Timeline.TickMillisecondsDefaultValue, FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, TickTimeSpanChanged));
+            MinimumTicksProperty = Timeline.MinimumTickProperty.AddOwner(typeof(TimelineControl), new FrameworkPropertyMetadata(default(long), MinimumMaximumTickChanged));
+            MaximumTicksProperty = Timeline.MaximumTickProperty.AddOwner(typeof(TimelineControl), new FrameworkPropertyMetadata(default(long), MinimumMaximumTickChanged));
+            TickTimeSpanProperty = Timeline.TickTimeSpanProperty.AddOwner(typeof(TimelineControl), new FrameworkPropertyMetadata(Timeline.TickTimeSpanDefaultValue, FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, TickTimeSpanChanged));
         }
 
         private bool recalcMaxZoom = true;
 
-        private static void MinimumMaximumMillisecondsChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private static void MinimumMaximumTickChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             TimelineControl self = (TimelineControl)sender;
-            bool newIsNoBound = (self.MinimumMilliseconds == null && self.MaximumMilliseconds == null);
+            bool newIsNoBound = (self.MinimumTicks == null && self.MaximumTicks == null);
             bool isNoBoundChanged = self.IsNoBounds != newIsNoBound;
             self.IsNoBounds = newIsNoBound;
             //if the are no bounds, we leave the process as is
@@ -557,21 +548,21 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
             if (setCurrentTimePending)
             {
                 setCurrentTimePending = false;
-                GoToMilliseconds(CurrentMilliseconds);
+                GoToTick(CurrentTick);
             }
             else if (e.HorizontalChange != 0)
             {
                 ignoreCurrentChanged = true;
-                CurrentMilliseconds = Timeline.OffsetToMilliseconds(e.HorizontalOffset, this);
+                CurrentTick = Timeline.OffsetToTick(e.HorizontalOffset, this);
                 ignoreCurrentChanged = false;
             }
         }
 
-        public void GoToMilliseconds(long date)
+        public void GoToTick(long date)
         {
             if (scrollViewer == null) return;
 
-            double offset = Timeline.DateToOffset(date, this);
+            double offset = Timeline.TickToOffset(date, this);
             if (offset >= 0)
             {
                 scrollViewer.ScrollToHorizontalOffset(offset);
@@ -608,13 +599,13 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
         {
             const double maxZoomMargin = 40;
 
-            if (MaximumMilliseconds.HasValue && MinimumMilliseconds.HasValue)
+            if (MaximumTicks.HasValue && MinimumTicks.HasValue)
             {
-                long timeframe = MaximumMilliseconds.Value - MinimumMilliseconds.Value;
+                long timeframe = MaximumTicks.Value - MinimumTicks.Value;
                 double tickPerTimeSpan = timeframe / MathUtil.ReduceUntilOne(actualSize.Width, maxZoomMargin);
 
-                MaximumTickTimeSpan = TimeSpan.FromMilliseconds((long)(tickPerTimeSpan));
-                MinimumTickTimeSpan = TimeSpan.FromMilliseconds((long)tickPerTimeSpan / 10);
+                MaximumTickTimeSpan = TimeSpan.FromTicks((long)(tickPerTimeSpan));
+                MinimumTickTimeSpan = TimeSpan.FromTicks((long)tickPerTimeSpan / 10);
             }
             else
             {
@@ -629,10 +620,10 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
             TimelineItem container = ContainerFromItem(item);
             if (container != null)
             {
-                Nullable<long> start = TimelineCompactPanel.GetStartMilliseconds(container);
+                Nullable<long> start = TimelineCompactPanel.GetStartTick(container);
                 if (start.HasValue)
                 {
-                    GoToMilliseconds(start.Value);
+                    GoToTick(start.Value);
                 }
             }
         }
@@ -644,8 +635,8 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
             TimelineItem container = ContainerFromItem(dataItem);
             if (container != null)
             {
-                Nullable<long> start = TimelineCompactPanel.GetStartMilliseconds(container);
-                Nullable<long> end = TimelineCompactPanel.GetEndMilliseconds(container);
+                Nullable<long> start = TimelineCompactPanel.GetStartTick(container);
+                Nullable<long> end = TimelineCompactPanel.GetEndTick(container);
 
                 if (IsSetZoomToFit(mode) && start.HasValue && end.HasValue)
                 {
@@ -675,8 +666,8 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
 
                 if (IsSetCurrentTime(mode))
                 {
-                    if (start.HasValue) CurrentMilliseconds = start.Value;
-                    else if (end.HasValue) CurrentMilliseconds = end.Value;
+                    if (start.HasValue) CurrentTick = start.Value;
+                    else if (end.HasValue) CurrentTick = end.Value;
                 }
             }
         }

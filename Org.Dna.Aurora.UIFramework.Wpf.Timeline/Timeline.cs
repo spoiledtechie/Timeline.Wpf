@@ -10,69 +10,65 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
     {
 
 
-        public static Nullable<long> GetMinimumMilliseconds(DependencyObject obj)
+        public static Nullable<long> GetMinimumTick(DependencyObject obj)
         {
-            return (Nullable<long>)obj.GetValue(MinimumMillisecondsProperty);
+            return (Nullable<long>)obj.GetValue(MinimumTickProperty);
         }
 
-        public static void SetMinimumMilliseconds(DependencyObject obj, Nullable<long> value)
+        public static void SetMinimumTick(DependencyObject obj, Nullable<long> value)
         {
-            obj.SetValue(MinimumMillisecondsProperty, value);
+            obj.SetValue(MinimumTickProperty, value);
         }
 
         // Using a DependencyProperty as the backing store for MinimumDate.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty MinimumMillisecondsProperty =
-                DependencyProperty.RegisterAttached("MinimumMilliseconds", typeof(Nullable<long>),
-                typeof(Timeline), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.Inherits));
+        public static readonly DependencyProperty MinimumTickProperty = DependencyProperty.RegisterAttached("MinimumTick", typeof(Nullable<long>), typeof(Timeline), new FrameworkPropertyMetadata(default(long), FrameworkPropertyMetadataOptions.Inherits));
 
 
 
-        public static Nullable<long> GetMaximumMilliseconds(DependencyObject obj)
+        public static Nullable<long> GetMaximumTick(DependencyObject obj)
         {
-            return (Nullable<long>)obj.GetValue(MaximumMillisecondsProperty);
+            return (Nullable<long>)obj.GetValue(MaximumTickProperty);
         }
 
-        public static void SetMaximumMilliseconds(DependencyObject obj, long value)
+        public static void SetMaximumTick(DependencyObject obj, long value)
         {
-            obj.SetValue(MaximumMillisecondsProperty, value);
+            obj.SetValue(MaximumTickProperty, value);
         }
 
         // Using a DependencyProperty as the backing store for MaximumDate.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty MaximumMillisecondsProperty =
-                DependencyProperty.RegisterAttached("MaximumMilliseconds", typeof(Nullable<long>),
-                typeof(Timeline), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.Inherits));
+        public static readonly DependencyProperty MaximumTickProperty = DependencyProperty.RegisterAttached("MaximumTick", typeof(Nullable<long>), typeof(Timeline), new FrameworkPropertyMetadata(default(long), FrameworkPropertyMetadataOptions.Inherits));
 
 
 
-        public static readonly long TickMillisecondsDefaultValue = TimeSpan.FromDays(1).Milliseconds;
+        public static readonly TimeSpan TickTimeSpanDefaultValue = TimeSpan.FromDays(1);
 
-        public static long GetTickMilliseconds(DependencyObject obj)
+        public static TimeSpan GetTickTimeSpan(DependencyObject obj)
         {
-            return (long)obj.GetValue(TickMillisecondsProperty);
+            return (TimeSpan)obj.GetValue(TickTimeSpanProperty);
         }
 
-        public static void SetTickTimeSpan(DependencyObject obj, long value)
+        public static void SetTickTimeSpan(DependencyObject obj, TimeSpan value)
         {
-            obj.SetValue(TickMillisecondsProperty, value);
+            obj.SetValue(TickTimeSpanProperty, value);
         }
 
         // Using a DependencyProperty as the backing store for TickTimeSpan.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty TickMillisecondsProperty =
-                DependencyProperty.RegisterAttached("TickMilliseconds", typeof(long),
-                typeof(Timeline), new FrameworkPropertyMetadata(TickMillisecondsDefaultValue, FrameworkPropertyMetadataOptions.Inherits));
+        public static readonly DependencyProperty TickTimeSpanProperty =
+                DependencyProperty.RegisterAttached("TickTimeSpan", typeof(TimeSpan),
+                typeof(Timeline), new FrameworkPropertyMetadata(TickTimeSpanDefaultValue, FrameworkPropertyMetadataOptions.Inherits));
 
 
         public static double GetPixelsPerTick(DependencyObject obj)
         {
-            long tickMilliseconds = GetTickMilliseconds(obj);
-            if (tickMilliseconds == 0) return 1;
-            return ((double)1 / tickMilliseconds);
+            TimeSpan tickTimeSpan = GetTickTimeSpan(obj);
+            if (tickTimeSpan.Ticks == 0) return 1;
+            return ((double)1 / tickTimeSpan.Ticks);
         }
 
-        public static double DateToOffset(long currentMilliseconds, DependencyObject owner)
+        public static double TickToOffset(long current, DependencyObject owner)
         {
-            Nullable<long> min = GetMinimumMilliseconds(owner);
-            Nullable<long> max = GetMaximumMilliseconds(owner);
+            Nullable<long> min = GetMinimumTick(owner);
+            Nullable<long> max = GetMaximumTick(owner);
             double pixelsPerTick = GetPixelsPerTick(owner);
 
             if (min == null || max == null)
@@ -80,19 +76,19 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
                 return -1;
             }
 
-            else if (currentMilliseconds < min || currentMilliseconds > max)
+            else if (current < min || current > max)
             {
                 return -1;
             }
 
-            double offset = currentMilliseconds - min.Value * pixelsPerTick;
+            double offset = (current - min.Value) * pixelsPerTick;
             return offset;
         }
 
-        public static long OffsetToMilliseconds(double offset, DependencyObject owner)
+        public static long OffsetToTick(double offset, DependencyObject owner)
         {
-            Nullable<long> min = GetMinimumMilliseconds(owner);
-            Nullable<long> max = GetMaximumMilliseconds(owner);
+            Nullable<long> min = GetMinimumTick(owner);
+            Nullable<long> max = GetMaximumTick(owner);
             double pixelsPerTick = GetPixelsPerTick(owner);
 
             if (min == null || max == null)

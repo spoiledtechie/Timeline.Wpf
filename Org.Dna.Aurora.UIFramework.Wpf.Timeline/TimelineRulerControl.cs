@@ -19,44 +19,44 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
             DefaultStyleKeyProperty.OverrideMetadata(typeof(TimelineRulerControl),
               new FrameworkPropertyMetadata(typeof(TimelineRulerControl)));
 
-            MinimumMillisecondsProperty = Timeline.MinimumMillisecondsProperty.AddOwner(typeof(TimelineRulerControl), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.AffectsMeasure, TimeframeChanged));
-            MaximumMillisecondsProperty = Timeline.MaximumMillisecondsProperty.AddOwner(typeof(TimelineRulerControl), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.AffectsMeasure, TimeframeChanged));
-            TickMillisecondsProperty = Timeline.TickMillisecondsProperty.AddOwner(typeof(TimelineRulerControl), new FrameworkPropertyMetadata(Timeline.TickMillisecondsDefaultValue, FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender, TicksTimeSpanChanged, TicksTimeSpanCoerce));
+            MinimumTickProperty = Timeline.MinimumTickProperty.AddOwner(typeof(TimelineRulerControl), new FrameworkPropertyMetadata(default(long), FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.AffectsMeasure, TimeframeChanged));
+            MaximumTickProperty = Timeline.MaximumTickProperty.AddOwner(typeof(TimelineRulerControl), new FrameworkPropertyMetadata(default(long), FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.AffectsMeasure, TimeframeChanged));
+            TickTimeSpanProperty = Timeline.TickTimeSpanProperty.AddOwner(typeof(TimelineRulerControl), new FrameworkPropertyMetadata(Timeline.TickTimeSpanDefaultValue, FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender, TicksTimeSpanChanged, TicksTimeSpanCoerce));
         }
 
-        public static readonly DependencyProperty MaximumMillisecondsProperty;
-        public static readonly DependencyProperty MinimumMillisecondsProperty;
-        public static readonly DependencyProperty TickMillisecondsProperty;
+        public static readonly DependencyProperty MaximumTickProperty;
+        public static readonly DependencyProperty MinimumTickProperty;
+        public static readonly DependencyProperty TickTimeSpanProperty;
 
-        public Nullable<long> MaximumMilliseconds
+        public Nullable<long> MaximumTick
         {
-            get { return (Nullable<long>)GetValue(MaximumMillisecondsProperty); }
-            set { SetValue(MaximumMillisecondsProperty, value); }
+            get { return (Nullable<long>)GetValue(MaximumTickProperty); }
+            set { SetValue(MaximumTickProperty, value); }
         }
 
-        public Nullable<long> MinimumMilliseconds
+        public Nullable<long> MinimumTick
         {
-            get { return (Nullable<long>)GetValue(MinimumMillisecondsProperty); }
-            set { SetValue(MinimumMillisecondsProperty, value); }
+            get { return (Nullable<long>)GetValue(MinimumTickProperty); }
+            set { SetValue(MinimumTickProperty, value); }
         }
 
-        public long TickMilliseconds
+        public TimeSpan TickTimeSpan
         {
-            get { return (long)GetValue(TickMillisecondsProperty); }
-            set { SetValue(TickMillisecondsProperty, value); }
+            get { return (TimeSpan)GetValue(TickTimeSpanProperty); }
+            set { SetValue(TickTimeSpanProperty, value); }
         }
 
 
 
-        public long BlockMilliseconds
+        public TimeSpan BlockTimeSpan
         {
-            get { return (long)GetValue(BlockMillisecondsProperty); }
-            set { SetValue(BlockMillisecondsProperty, value); }
+            get { return (TimeSpan)GetValue(BlockTimeSpanProperty); }
+            set { SetValue(BlockTimeSpanProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for BlockTimeSpan.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty BlockMillisecondsProperty =
-          DependencyProperty.Register("BlockMilliseconds", typeof(long), typeof(TimelineRulerControl), new FrameworkPropertyMetadata(TimeSpan.FromDays(1).Milliseconds));
+        public static readonly DependencyProperty BlockTimeSpanProperty =
+          DependencyProperty.Register("BlockTimeSpan", typeof(TimeSpan), typeof(TimelineRulerControl), new FrameworkPropertyMetadata(TimeSpan.FromDays(1)));
 
 
         private static readonly DependencyPropertyKey RulerBlocksPropertyKey =
@@ -193,27 +193,27 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
                 updateDpiPerBlock = false;
                 effectiveBlockSpan = null;
 
-                double pixelPerTick = 1D / TickMilliseconds;
-                DpiPerBlock = pixelPerTick * EffectiveBlockMilliseconds;
+                double pixelPerTick = 1D / TickTimeSpan.Ticks;
+                DpiPerBlock = pixelPerTick * EffectiveBlockTicks;
 
                 UpdateRulerBlocks();
             }
         }
 
-        private long EffectiveBlockMilliseconds
+        private long EffectiveBlockTicks
         {
             get
             {
                 if (effectiveBlockSpan == null)
                 {
-                    double pixelPerTick = 1D / TickMilliseconds;
+                    double pixelPerTick = 1D / TickTimeSpan.Ticks;
                     long ticks = (long)(150 / pixelPerTick);
                     effectiveBlockSpan = ticks;
 
                     // NACHON: Added to show nicer timelineRuler                     
                     foreach (var blockFactor in BlockFactors())
                     {
-                        if (TickMilliseconds <= blockFactor)
+                        if (TickTimeSpan.Ticks <= blockFactor)
                         {
                             effectiveBlockSpan = blockFactor;
                             break;
@@ -229,35 +229,36 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
 
         private IEnumerable<long> BlockFactors()
         {
-            yield return 15 * 60000;
-            yield return 30 * 60000;
-            yield return 1 * 60 * 60000;
-            yield return 2 * 60 * 60000;
-            yield return 4 * 60 * 60000;
-            yield return 8 * 60 * 60000;
-            yield return 16 * 60 * 60000;
-            yield return 1 * 24 * 60 * 60000;
-            yield return 2 * 24 * 60 * 60000;
-            yield return 3 * 24 * 60 * 60000;
-            yield return 4 * 24 * 60 * 60000;
-            yield return 5 * 24 * 60 * 60000;
-            yield return 6 * 24 * 60 * 60000;
-            yield return 7 * 24 * 60 * 60000;
+            yield return TimeSpan.FromMinutes(15).Ticks;
+            yield return TimeSpan.FromMinutes(30).Ticks;
+            yield return TimeSpan.FromHours(1).Ticks;
+            yield return TimeSpan.FromHours(2).Ticks;
+            yield return TimeSpan.FromHours(4).Ticks;
+            yield return TimeSpan.FromHours(8).Ticks;
+            yield return TimeSpan.FromHours(16).Ticks;
+            yield return TimeSpan.FromDays(1).Ticks;
+            yield return TimeSpan.FromDays(2).Ticks;
+            yield return TimeSpan.FromDays(3).Ticks;
+            yield return TimeSpan.FromDays(4).Ticks;
+            yield return TimeSpan.FromDays(5).Ticks;
+            yield return TimeSpan.FromDays(6).Ticks;
+            yield return TimeSpan.FromDays(7).Ticks;
+            yield return TimeSpan.FromDays(30).Ticks;
         }
 
         private readonly List<RulerBlockItem> EmptyRulerBlockList = new List<RulerBlockItem>();
 
         private void UpdateRulerBlocks()
         {
-            if (MinimumMilliseconds == null || MaximumMilliseconds == null)
+            if (MinimumTick == null || MaximumTick == null)
             {
                 // Clear all block
                 RulerBlocks = EmptyRulerBlockList;
             }
             else
             {
-                long timeframe = MaximumMilliseconds.Value - MinimumMilliseconds.Value;
-                int totalBlocks = (int)Math.Ceiling((double)(timeframe / EffectiveBlockMilliseconds));
+                long timeframe = MaximumTick.Value - MinimumTick.Value;
+                int totalBlocks = (int)Math.Ceiling((double)(timeframe / EffectiveBlockTicks));
                 totalBlocks++;
 
                 if (totalBlocks > 2000)
@@ -268,21 +269,21 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
 
                 List<RulerBlockItem> blocks = new List<RulerBlockItem>();
 
-                long spanFromStart = EffectiveBlockMilliseconds;
-                long prev = MinimumMilliseconds.Value;
+                long spanFromStart = EffectiveBlockTicks;
+                long prev = MinimumTick.Value;
 
                 for (int blockIdx = 0; blockIdx < totalBlocks; blockIdx++)
                 {
-                    long current = MinimumMilliseconds.Value + spanFromStart;
+                    long current = MinimumTick.Value + spanFromStart;
 
                     RulerBlockItem block = new RulerBlockItem();
                     block.Start = prev;
-                    block.Span = EffectiveBlockMilliseconds;
+                    block.Span = EffectiveBlockTicks;
                     //block.Text = prev.ToString();
                     blocks.Add(block);
 
                     prev = current;
-                    spanFromStart = spanFromStart + EffectiveBlockMilliseconds;
+                    spanFromStart = spanFromStart + EffectiveBlockTicks;
                 }
 
                 RulerBlocks = blocks;
@@ -305,9 +306,9 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
 
             TimeSpan tickTimeSpan = (TimeSpan)values[0];
             double pixelPerTick = 1D / tickTimeSpan.Ticks;
-            TimeSpan span = (TimeSpan)values[1];
+            long span = (long)values[1];
 
-            double width = span.Ticks * pixelPerTick;
+            double width = span * pixelPerTick;
 
             return width;
         }

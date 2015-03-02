@@ -71,32 +71,31 @@
                                 x:Name="NoBoundsText"
                                 ContentSource="NoBounds"
                                 Visibility="Collapsed"/>
-                        
+
                             <local:FrictionScrollViewer
                                 x:Name="PART_ScrollViewer"
                                 Style="{StaticResource TimelineControlScrollViewerStyle}"
                                 VerticalScrollBarVisibility="Auto"
                                 HorizontalScrollBarVisibility="Auto">
 
-                            <Grid>
-                            
-                                <local:TimelineItemsPresenter
+                                <Grid>
+
+                                    <local:TimelineItemsPresenter
                                   x:Name="PART_ItemsPresenter"
                                   ItemsSource="{TemplateBinding Items}"
                                   ItemsPanel="{TemplateBinding ItemsPanel}"
-                                  ItemContainerStyleSelector="{TemplateBinding ItemContainerStyleSelector}"
-                                />
+                                  ItemContainerStyleSelector="{TemplateBinding ItemContainerStyleSelector}"                                />
 
-                                <local:ConnectionsPresenter
+                                    <local:ConnectionsPresenter
                                     x:Name="PART_ConnectionsPresenter"
                                     ItemsSource="{TemplateBinding Connections}"
                                     ItemContainerStyleSelector="{TemplateBinding ConnectionStyleSelector}"
                                 />
 
-                            </Grid>
+                                </Grid>
 
-                        </local:FrictionScrollViewer>
-                            </Grid>
+                            </local:FrictionScrollViewer>
+                        </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsNoBounds" Value="True">
