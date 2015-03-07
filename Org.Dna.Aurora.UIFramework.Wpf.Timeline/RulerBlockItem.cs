@@ -30,11 +30,13 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
                     if (calcText == null)
                     {
                         var ts = TimeSpan.FromTicks(Start);
-                        if (ts.Hours > 0)
-                            return ts.Hours+ ":" + ts.Minutes.ToString("D2") + ":" + ts.Seconds.ToString("D2");
-                        if (ts.Minutes > 0)
-                            return ts.Minutes.ToString("D2") + ":" + ts.Seconds.ToString("D2");
-                        return ts.Seconds.ToString("D2");
+                        var tsSpan = TimeSpan.FromTicks(Span);
+                        if (tsSpan.Hours > 0)
+                            calcText = ts.Hours + ":" + ts.Minutes.ToString("D2") + ":" + ts.Seconds.ToString("D2");
+                        else if (tsSpan.Minutes > 0)
+                            calcText = ts.Minutes.ToString("D2") + ":" + ts.Seconds.ToString("D2");
+                        else
+                            calcText = ts.Seconds.ToString("D2") + "s";
                     }
                     return calcText;
                 }

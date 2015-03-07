@@ -229,6 +229,13 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
 
         private IEnumerable<long> BlockFactors()
         {
+            yield return TimeSpan.FromSeconds(3).Ticks;
+            yield return TimeSpan.FromSeconds(7).Ticks;
+            yield return TimeSpan.FromSeconds(15).Ticks;
+            yield return TimeSpan.FromSeconds(30).Ticks;
+            yield return TimeSpan.FromSeconds(60).Ticks;
+            yield return TimeSpan.FromMinutes(3).Ticks;
+            yield return TimeSpan.FromMinutes(7).Ticks;
             yield return TimeSpan.FromMinutes(15).Ticks;
             yield return TimeSpan.FromMinutes(30).Ticks;
             yield return TimeSpan.FromHours(1).Ticks;
@@ -258,7 +265,15 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
             else
             {
                 long timeframe = MaximumTick.Value - MinimumTick.Value;
+                System.Diagnostics.Debug.WriteLine("timeframe " +  timeframe);
                 int totalBlocks = (int)Math.Ceiling((double)(timeframe / EffectiveBlockTicks));
+                System.Diagnostics.Debug.WriteLine("fefTicks " + EffectiveBlockTicks);
+                System.Diagnostics.Debug.WriteLine("totalBlocks " + totalBlocks);
+                System.Diagnostics.Debug.WriteLine("devidied " + (double)(timeframe / EffectiveBlockTicks));
+                System.Diagnostics.Debug.WriteLine("math " + Math.Ceiling((double)(timeframe / EffectiveBlockTicks)));
+                
+                
+                
                 totalBlocks++;
 
                 if (totalBlocks > 2000)
@@ -287,6 +302,7 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
                 }
 
                 RulerBlocks = blocks;
+                System.Diagnostics.Debug.WriteLine(blocks.Count);
             }
         }
 
