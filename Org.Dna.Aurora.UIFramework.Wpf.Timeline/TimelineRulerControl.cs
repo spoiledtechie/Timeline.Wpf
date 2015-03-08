@@ -213,7 +213,7 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
                     // NACHON: Added to show nicer timelineRuler                     
                     foreach (var blockFactor in BlockFactors())
                     {
-                        if (TickTimeSpan.Ticks <= blockFactor)
+                        if (TickTimeSpan.Ticks >= blockFactor)
                         {
                             effectiveBlockSpan = blockFactor;
                             break;
