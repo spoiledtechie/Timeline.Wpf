@@ -37,8 +37,6 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
             private set { SetValue(ItemsPropertyKey, value); }
         }
 
-
-
         public IEnumerable ItemsSource
         {
             get { return (IEnumerable)GetValue(ItemsSourceProperty); }
@@ -46,8 +44,7 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
         }
 
         // Using a DependencyProperty as the backing store for ItemsSource.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty ItemsSourceProperty =
-            DependencyProperty.Register("ItemsSource", typeof(IEnumerable), typeof(TimelineControl), new FrameworkPropertyMetadata(null, ItemsSourceChanged));
+        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(IEnumerable), typeof(TimelineControl), new FrameworkPropertyMetadata(null, ItemsSourceChanged));
 
 
         private static void ItemsSourceChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
@@ -74,6 +71,10 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
                 {
                     collectionChanged.CollectionChanged += new NotifyCollectionChangedEventHandler(ItemsSource_CollectionChanged);
                 }
+            }
+            else
+            {
+                RemoveAllItemsInternal();
             }
         }
 
@@ -146,8 +147,7 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
         }
 
         // Using a DependencyProperty as the backing store for ConnectionsSource.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty ConnectionsSourceProperty =
-            DependencyProperty.Register("ConnectionsSource", typeof(IEnumerable), typeof(TimelineControl), new FrameworkPropertyMetadata(null, ConnectionsSourceChanged));
+        public static readonly DependencyProperty ConnectionsSourceProperty = DependencyProperty.Register("ConnectionsSource", typeof(IEnumerable), typeof(TimelineControl), new FrameworkPropertyMetadata(null, ConnectionsSourceChanged));
 
 
         private static void ConnectionsSourceChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
@@ -232,16 +232,11 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
         }
 
         // Using a DependencyProperty as the backing store for ItemsPanel.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty ItemsPanelProperty =
-            DependencyProperty.Register("ItemsPanel", typeof(ItemsPanelTemplate), typeof(TimelineControl),
-            ItemsPanelMetadata());
+        public static readonly DependencyProperty ItemsPanelProperty = DependencyProperty.Register("ItemsPanel", typeof(ItemsPanelTemplate), typeof(TimelineControl), ItemsPanelMetadata());
 
         private static FrameworkPropertyMetadata ItemsPanelMetadata()
         {
-            var defaultPanelTemplate =
-              new ItemsPanelTemplate(
-                new FrameworkElementFactory(typeof(TimelineCompactPanel))
-                );
+            var defaultPanelTemplate = new ItemsPanelTemplate(new FrameworkElementFactory(typeof(TimelineCompactPanel)));
             var md = new FrameworkPropertyMetadata(defaultPanelTemplate);
             return md;
         }
@@ -255,12 +250,7 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
         }
 
         // Using a DependencyProperty as the backing store for ItemContainerStyleSelector.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty ItemContainerStyleSelectorProperty =
-            DependencyProperty.Register("ItemContainerStyleSelector", typeof(StyleSelector), typeof(TimelineControl),
-            new FrameworkPropertyMetadata(null));
-
-
-
+        public static readonly DependencyProperty ItemContainerStyleSelectorProperty = DependencyProperty.Register("ItemContainerStyleSelector", typeof(StyleSelector), typeof(TimelineControl), new FrameworkPropertyMetadata(null));
 
         public StyleSelector ConnectionStyleSelector
         {
@@ -269,11 +259,7 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
         }
 
         // Using a DependencyProperty as the backing store for ConnectionStyleSelector.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty ConnectionStyleSelectorProperty =
-            DependencyProperty.Register("ConnectionStyleSelector", typeof(StyleSelector), typeof(TimelineControl),
-            new FrameworkPropertyMetadata(null));
-
-
+        public static readonly DependencyProperty ConnectionStyleSelectorProperty = DependencyProperty.Register("ConnectionStyleSelector", typeof(StyleSelector), typeof(TimelineControl), new FrameworkPropertyMetadata(null));
 
         public Nullable<long> MaximumTicks
         {
@@ -284,9 +270,6 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
         // Using a DependencyProperty as the backing store for MaximumDate.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty MaximumTicksProperty;
 
-
-
-
         public Nullable<long> MinimumTicks
         {
             get { return (Nullable<long>)GetValue(MinimumTicksProperty); }
@@ -295,10 +278,6 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
 
         // Using a DependencyProperty as the backing store for MinimumDate.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty MinimumTicksProperty;
-
-
-
-
 
         public TimeSpan TickTimeSpan
         {
@@ -359,12 +338,9 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
             GoToTick((long)e.NewValue);
         }
 
-        private static readonly DependencyPropertyKey MaximumTickTimeSpanPropertyKey =
-          DependencyProperty.RegisterReadOnly("MaximumTickTimeSpan", typeof(TimeSpan),
-          typeof(TimelineControl), new FrameworkPropertyMetadata(TimeSpan.FromDays(1)));
+        private static readonly DependencyPropertyKey MaximumTickTimeSpanPropertyKey = DependencyProperty.RegisterReadOnly("MaximumTickTimeSpan", typeof(TimeSpan), typeof(TimelineControl), new FrameworkPropertyMetadata(TimeSpan.FromDays(1)));
 
-        public static readonly DependencyProperty MaximumTickTimeSpanProperty =
-          MaximumTickTimeSpanPropertyKey.DependencyProperty;
+        public static readonly DependencyProperty MaximumTickTimeSpanProperty = MaximumTickTimeSpanPropertyKey.DependencyProperty;
 
         /// <summary>
         /// Get the maxinimum tick time span allowed.
@@ -376,12 +352,9 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
             private set { SetValue(MaximumTickTimeSpanPropertyKey, value); }
         }
 
-        private static readonly DependencyPropertyKey MinimumTickTimeSpanPropertyKey =
-          DependencyProperty.RegisterReadOnly("MinimumTickTimeSpan", typeof(TimeSpan),
-          typeof(TimelineControl), new FrameworkPropertyMetadata(TimeSpan.FromDays(1)));
+        private static readonly DependencyPropertyKey MinimumTickTimeSpanPropertyKey = DependencyProperty.RegisterReadOnly("MinimumTickTimeSpan", typeof(TimeSpan), typeof(TimelineControl), new FrameworkPropertyMetadata(TimeSpan.FromDays(1)));
 
-        public static readonly DependencyProperty MinimumTickTimeSpanProperty =
-          MinimumTickTimeSpanPropertyKey.DependencyProperty;
+        public static readonly DependencyProperty MinimumTickTimeSpanProperty = MinimumTickTimeSpanPropertyKey.DependencyProperty;
 
         /// <summary>
         /// Get the minimum tick time allowed.
@@ -393,12 +366,9 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
             private set { SetValue(MinimumTickTimeSpanPropertyKey, value); }
         }
 
-        private static readonly DependencyPropertyKey DisplayTimeSpanPropertyKey =
-          DependencyProperty.RegisterReadOnly("DisplayTimeSpan", typeof(TimeSpan),
-          typeof(TimelineControl), new FrameworkPropertyMetadata(TimeSpan.FromDays(1)));
+        private static readonly DependencyPropertyKey DisplayTimeSpanPropertyKey = DependencyProperty.RegisterReadOnly("DisplayTimeSpan", typeof(TimeSpan), typeof(TimelineControl), new FrameworkPropertyMetadata(TimeSpan.FromDays(1)));
 
-        public static readonly DependencyProperty DisplayTimeSpanProperty =
-          DisplayTimeSpanPropertyKey.DependencyProperty;
+        public static readonly DependencyProperty DisplayTimeSpanProperty = DisplayTimeSpanPropertyKey.DependencyProperty;
 
         /// <summary>
         /// Get the time span display by the timeline control.
@@ -425,14 +395,9 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
         }
 
         // Using a DependencyProperty as the backing store for IsNoBounds.  This enables animation, styling, binding, etc...
-        private static readonly DependencyPropertyKey IsNoBoundsPropertyKey =
-          DependencyProperty.RegisterReadOnly("IsNoBounds", typeof(bool), typeof(TimelineControl), new FrameworkPropertyMetadata(true));
+        private static readonly DependencyPropertyKey IsNoBoundsPropertyKey = DependencyProperty.RegisterReadOnly("IsNoBounds", typeof(bool), typeof(TimelineControl), new FrameworkPropertyMetadata(true));
 
-        public static readonly DependencyProperty IsNoBoundsProperty =
-            IsNoBoundsPropertyKey.DependencyProperty;
-
-
-
+        public static readonly DependencyProperty IsNoBoundsProperty = IsNoBoundsPropertyKey.DependencyProperty;
 
         public object NoBounds
         {
@@ -452,10 +417,7 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
         }
 
         // Using a DependencyProperty as the backing store for NoBoundsContentTemplate.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty NoBoundsContentTemplateProperty =
-            DependencyProperty.Register("NoBoundsContentTemplate", typeof(DataTemplate), typeof(TimelineControl), new UIPropertyMetadata(null));
-
-
+        public static readonly DependencyProperty NoBoundsContentTemplateProperty = DependencyProperty.Register("NoBoundsContentTemplate", typeof(DataTemplate), typeof(TimelineControl), new UIPropertyMetadata(null));
 
         public DataTemplateSelector NoBoundsContentTemplateSelector
         {
@@ -464,10 +426,7 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
         }
 
         // Using a DependencyProperty as the backing store for NoBoundsContentTemplateSelector.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty NoBoundsContentTemplateSelectorProperty =
-            DependencyProperty.Register("NoBoundsContentTemplateSelector", typeof(DataTemplateSelector), typeof(TimelineControl), new UIPropertyMetadata(null));
-
-
+        public static readonly DependencyProperty NoBoundsContentTemplateSelectorProperty = DependencyProperty.Register("NoBoundsContentTemplateSelector", typeof(DataTemplateSelector), typeof(TimelineControl), new UIPropertyMetadata(null));
 
         public string NoBoundsStringFormat
         {
@@ -476,10 +435,7 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
         }
 
         // Using a DependencyProperty as the backing store for NoBoundsStringFormat.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty NoBoundsStringFormatProperty =
-            DependencyProperty.Register("NoBoundsStringFormat", typeof(string), typeof(TimelineControl), new UIPropertyMetadata(null));
-
-
+        public static readonly DependencyProperty NoBoundsStringFormatProperty = DependencyProperty.Register("NoBoundsStringFormat", typeof(string), typeof(TimelineControl), new UIPropertyMetadata(null));
 
 
         #endregion
@@ -628,8 +584,7 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
             }
         }
 
-        public void BringIntoView(
-          TimelineControlBringIntoViewMode mode, object dataItem)
+        public void BringIntoView(TimelineControlBringIntoViewMode mode, object dataItem)
         {
 
             TimelineItem container = ContainerFromItem(dataItem);
