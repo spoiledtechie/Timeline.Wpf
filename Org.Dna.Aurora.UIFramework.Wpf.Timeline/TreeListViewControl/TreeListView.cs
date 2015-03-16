@@ -65,8 +65,7 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline.TreeListViewControl {
 
 			// Set sort description for child lists
 			foreach (var item in items) {
-				TreeViewItem tvi = 
-					ItemContainerGenerator.ContainerFromItem(item) as TreeViewItem;
+				TreeViewItem tvi = 					ItemContainerGenerator.ContainerFromItem(item) as TreeViewItem;
 				if (tvi != null) {
 					ApplySorting(tvi.Items);
 				}

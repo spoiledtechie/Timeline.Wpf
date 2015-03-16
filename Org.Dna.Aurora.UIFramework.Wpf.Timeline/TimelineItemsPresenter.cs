@@ -42,5 +42,10 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
         {
             return base.ItemContainerGenerator.ContainerFromItem(item) as TimelineItem;
         }
+
+        protected override void OnKeyUp(System.Windows.Input.KeyEventArgs e)
+        {
+            base.OnKeyUp(e);
+        }
     }
 }

@@ -27,6 +27,11 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline.TreeListViewControl {
       }
     }
 
+    protected override void OnKeyUp(System.Windows.Input.KeyEventArgs e)
+    {
+        base.OnKeyUp(e);
+    }
+
 
     protected override DependencyObject GetContainerForItemOverride() {
       return new TreeListViewItem();

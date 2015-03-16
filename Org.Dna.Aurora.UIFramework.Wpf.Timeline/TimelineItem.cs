@@ -22,6 +22,15 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline {
 			
 		}
 
+        protected override void OnKeyUp(System.Windows.Input.KeyEventArgs e)
+        {
+            base.OnKeyUp(e);
+        }
+
+        protected override void OnMouseUp(System.Windows.Input.MouseButtonEventArgs e)
+        {
+            base.OnMouseUp(e);
+        }
 
 
 		public bool IsCollapsed {

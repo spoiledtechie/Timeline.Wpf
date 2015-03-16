@@ -52,6 +52,11 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
             obj.SetValue(ActualRowIndexPropertyKey, value);
         }
 
+        protected override void OnKeyUp(System.Windows.Input.KeyEventArgs e)
+        {
+            base.OnKeyUp(e);
+        }
+
         protected static void ClearActualRowIndex(DependencyObject obj)
         {
             obj.ClearValue(ActualRowIndexPropertyKey);

@@ -47,6 +47,11 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
         public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(IEnumerable), typeof(TimelineControl), new FrameworkPropertyMetadata(null, ItemsSourceChanged));
 
 
+
+        protected override void OnKeyUp(System.Windows.Input.KeyEventArgs e)
+        {
+            base.OnKeyUp(e);
+        }
         private static void ItemsSourceChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             TimelineControl self = (TimelineControl)o;
@@ -125,12 +130,9 @@ namespace Org.Dna.Aurora.UIFramework.Wpf.Timeline
             Items.Remove(item);
         }
 
-        private static readonly DependencyPropertyKey ConnectionsPropertyKey =
-          DependencyProperty.RegisterReadOnly("Connections", typeof(IList<object>),
-          typeof(TimelineControl), new FrameworkPropertyMetadata(null));
+        private static readonly DependencyPropertyKey ConnectionsPropertyKey =          DependencyProperty.RegisterReadOnly("Connections", typeof(IList<object>),          typeof(TimelineControl), new FrameworkPropertyMetadata(null));
 
-        public static readonly DependencyProperty ConnectionsProperty =
-          ConnectionsPropertyKey.DependencyProperty;
+        public static readonly DependencyProperty ConnectionsProperty =          ConnectionsPropertyKey.DependencyProperty;
 
         public IList<object> Connections
         {
